@@ -18,10 +18,15 @@
       <div id="rooms">
         Room:
         <select id="roomSelect">
+          <option value="all">all</option>
         </select>
+        <form action="#" id="make-room" method="post">
+          <input type="text" name="roomname" id="room-name" placeholder="Add a room"/>
+          <input type="submit" name="submit" class="room-submit"/>
+        </form>        
       </div>
       <form action="#" id="send" method="post">
-        <input type="text" name="message" id="message"/>
+        <input type="text" name="message" id="message" placeholder="Send message"/>
         <input type="submit" name="submit" class="submit"/>
       </form>
       <div id="chats"></div>

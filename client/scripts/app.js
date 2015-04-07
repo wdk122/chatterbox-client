@@ -4,6 +4,9 @@
 var app = {
   server: 'https://api.parse.com/1/classes/chatterbox',
   friends: {},
+  messages: [],
+  currentRoom: 'all',
+  roomList: {'all': 'all'},
 
 
   init: function(){
@@ -11,8 +14,18 @@ var app = {
       ev.preventDefault();
       app.handleSubmit();
     });
+    $('#make-room').on('submit', function(ev){
+      ev.preventDefault();
+      var roomname = $('#room-name').val();
+      app.addRoom(roomname);
+      roomList[roomname] = roomname;
+    });
     $('#main').on('click', '.username', function(ev){
       app.addFriend(ev);
+    });
+    $('#roomSelect').change(function(ev){
+      app.currentRoom = $(ev.currentTarget).val();
+      app.filterRoom();
     });
     app.fetch();
     setInterval(function(){
@@ -42,13 +55,10 @@ var app = {
       data: {order: '-createdAt'},
       type: 'GET',
       success: function(data){
-        app.clearMessages();
-        var messages = data.results;
-        messages.forEach(function(msg){
-          app.addMessage(msg);
-        });
+        app.messages = data.results;
+        app.filterRoom();
         app.boldFriends();
-        app.createRoomList(messages);
+        app.createRoomList(app.messages);
       }
     });
   },
@@ -71,17 +81,28 @@ var app = {
   },
 
   createRoomList: function(msgs){
-    $('#roomSelect').html('');
-    
-    var rooms = {};
+    var newRooms = [];
     msgs.forEach(function(msg){
       var room = _.escape(msg.roomname);
-      rooms[room] = room;
+      if(!(room in app.roomList)){
+        newRooms.push(room);
+      }
+      app.roomList[room] = room;
     });
 
-    rooms = Object.keys(rooms);
-    rooms.forEach(function(room){
+    
+    newRooms.forEach(function(room){
       app.addRoom(room);
+    });
+  },
+
+  filterRoom: function(){
+    app.clearMessages();
+    app.messages.forEach(function(msg){
+      if(msg.roomname === app.currentRoom ||
+         app.currentRoom === 'all'){
+        app.addMessage(msg);
+      }
     });
   },
 
@@ -104,7 +125,7 @@ var app = {
     var submittedMsg = {
       username: window.location.search.split('username=')[1],
       text: $('#message').val(),
-      roomname: ''
+      roomname: app.currentRoom
     };
     $('#message').val('');
     app.send(submittedMsg);
