@@ -3,13 +3,16 @@
 
 var app = {
   server: 'https://api.parse.com/1/classes/chatterbox',
+  friends: {},
 
   init: function(){
     $('#send').on('submit', function(ev){
       ev.preventDefault();
       app.handleSubmit();
     });
-    $('#main').on('click', '.username', app.addFriend);
+    $('#main').on('click', '.username', function(ev){
+      app.addFriend(ev);
+    });
     app.fetch();
     setInterval(function(){
       app.fetch();
@@ -18,6 +21,7 @@ var app = {
 
   deinit: function(){
     $('#send').off();
+    $('#main').off();
   },
 
   send: function(message){
@@ -42,6 +46,7 @@ var app = {
         messages.forEach(function(msg){
           app.addMessage(msg);
         });
+        app.boldFriends();
       }
     });
   },
@@ -63,18 +68,28 @@ var app = {
     $('#roomSelect').append('<div>' + roomName + '</div>');
   },
 
-  addFriend: function(){
+  addFriend: function(friend){
+    var username = $(friend.target).data('username');
+    app.friends[username] = username;
+    app.boldFriends();
+  },
 
+  boldFriends: function(){
+    $('#chats').children().each(function(i, msg){
+      var username = $(msg).find('.username').data('username');
+      if(username in app.friends){
+        $(msg).addClass('friend');
+      }
+    });
   },
 
   handleSubmit: function(){
-    debugger;
     var submittedMsg = {
       username: window.location.search.split('username=')[1],
       text: $('#message').val(),
       room: ''
     };
-    console.log('test');
+    $('#message').val('');
     app.send(submittedMsg);
   }
 };
