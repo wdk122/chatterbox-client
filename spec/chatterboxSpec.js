@@ -22,6 +22,10 @@ describe('chatterbox', function() {
       ajaxSpy.reset();
     });
 
+    afterEach(function(){
+      app.deinit();
+    });
+
     describe('sending', function() {
       it('should have a send method', function(){
         expect(app.send).to.be.ok;
@@ -114,12 +118,13 @@ describe('chatterbox', function() {
 
       it('should try to send a message upon clicking submit', function(){
         sinon.spy(app, 'handleSubmit');
-
+        // console.log(app.handleSubmit);
         $('#message').val('Why so many Mel Brooks quotes?');
 
         app.init();
 
         $('#send .submit').trigger('submit');
+
         expect(app.handleSubmit.calledOnce).to.be.true;
 
         app.handleSubmit.restore();
