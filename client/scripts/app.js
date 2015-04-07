@@ -5,6 +5,7 @@ var app = {
   server: 'https://api.parse.com/1/classes/chatterbox',
   friends: {},
 
+
   init: function(){
     $('#send').on('submit', function(ev){
       ev.preventDefault();
@@ -47,6 +48,7 @@ var app = {
           app.addMessage(msg);
         });
         app.boldFriends();
+        app.createRoomList(messages);
       }
     });
   },
@@ -64,8 +66,23 @@ var app = {
     $('#chats').append(messageNode);
   },
 
-  addRoom: function(roomName){
-    $('#roomSelect').append('<div>' + roomName + '</div>');
+  addRoom: function(roomname){
+    $('#roomSelect').append('<option value="' + roomname + '">' + roomname + '</option>');
+  },
+
+  createRoomList: function(msgs){
+    $('#roomSelect').html('');
+    
+    var rooms = {};
+    msgs.forEach(function(msg){
+      var room = _.escape(msg.roomname);
+      rooms[room] = room;
+    });
+
+    rooms = Object.keys(rooms);
+    rooms.forEach(function(room){
+      app.addRoom(room);
+    });
   },
 
   addFriend: function(friend){
@@ -87,7 +104,7 @@ var app = {
     var submittedMsg = {
       username: window.location.search.split('username=')[1],
       text: $('#message').val(),
-      room: ''
+      roomname: ''
     };
     $('#message').val('');
     app.send(submittedMsg);
