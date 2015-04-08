@@ -16,7 +16,7 @@
     <div id="main">
       <h1>chatterbox</h1>
       <div id="rooms">
-        Room:
+        Select a Room:
         <select id="roomSelect">
           <option value="all">all</option>
         </select>
@@ -24,6 +24,9 @@
           <input type="text" name="roomname" id="room-name" placeholder="Add a room"/>
           <input type="submit" name="submit" class="room-submit"/>
         </form>        
+      </div>
+      <div id="tabs">
+        <div class="tab selected">all</div>
       </div>
       <form action="#" id="send" method="post">
         <input type="text" name="message" id="message" placeholder="Send message"/>

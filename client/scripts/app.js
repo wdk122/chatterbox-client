@@ -17,15 +17,27 @@ var app = {
     $('#make-room').on('submit', function(ev){
       ev.preventDefault();
       var roomname = $('#room-name').val();
+      $('#room-name').val('');
       app.addRoom(roomname);
-      roomList[roomname] = roomname;
+      app.roomList[roomname] = roomname;
+      app.currentRoom = roomname;
+      app.addTab(roomname);
+      app.filterRoom();
     });
     $('#main').on('click', '.username', function(ev){
       app.addFriend(ev);
     });
     $('#roomSelect').change(function(ev){
       app.currentRoom = $(ev.currentTarget).val();
+      app.addTab(app.currentRoom);
       app.filterRoom();
+    });
+    $('#tabs').on('click', '.tab', function(ev){
+      $('.selected').removeClass('selected');
+      app.currentRoom = $(ev.currentTarget).html();
+      app.filterRoom();
+      $(ev.currentTarget).addClass('selected');
+
     });
     app.fetch();
     setInterval(function(){
@@ -40,7 +52,7 @@ var app = {
 
   send: function(message){
     $.ajax({
-      url: 'https://api.parse.com/1/classes/chatterbox',
+      url: app.server,
       type: 'POST',
       data: JSON.stringify(message),
       success: function(data){
@@ -51,7 +63,7 @@ var app = {
 
   fetch: function(){
     $.ajax({
-      url: 'https://api.parse.com/1/classes/chatterbox',
+      url: app.server,
       data: {order: '-createdAt'},
       type: 'GET',
       success: function(data){
@@ -104,6 +116,11 @@ var app = {
         app.addMessage(msg);
       }
     });
+  },
+
+  addTab: function(rName){
+    $('.selected').removeClass('selected');
+    $('#tabs').append('<div class="tab selected">' + rName + '</div>');
   },
 
   addFriend: function(friend){
